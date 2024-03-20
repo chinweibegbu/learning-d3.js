@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- D3.js was added to this project via CDN -->
+    <script type="text/javascript" src="https://d3js.org/d3.v4.min.js"></script>
+    <title>D3.js Graphs</title>
+
+    <style>
+        .line {
+            fill: none;
+            stroke: green;
+            stroke-width: 5px;
+        }
+    </style>
+</head>
+
+<body>
+    <script>
+        // Set the dimensions and margins of the graph
+        var margin = {
+                top: 20,
+                right: 20,
+                bottom: 30,
+                left: 50
+            },
+            width = 960 - margin.left - margin.right,
+            height = 500 - margin.top - margin.bottom;
+
+        // Set the ranges for each axis
+        var x = d3.scaleTime().range([0, width]);
+        var y = d3.scaleLinear().range([height, 0]);
+
+        // Define the line for the graph
+        var valueline = d3.line()
+            .x(function (d) { return x(d.year); })
+            .y(function (d) { return y(d.population); });
+
+        // Append an SVG obgect to <body>
+        var svg = d3.select("body")
+            .append("svg")
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom)
+            // Append a group element, <g>, to the SVG...            
+            .append("g")
+            // ...and move it to the top-left corner
+            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+        // Get the data from the specified CSV file
+        d3.csv("data.csv", function (error, data) {
+            if (error) throw error;
+
+            // Format the loaded data
+            data.forEach(function (d) {
+                d.year = d.year;
+                d.population = +d.population;
+            });
+
+            // Scale the range of the data
+            x.domain(d3.extent(data, function (d) { return d.year; }));
+            y.domain([0, d3.max(data, function (d) { return d.population; })]);
+
+            // Add the created line path
+            svg.append("path")
+                .data([data])
+                .attr("class", "line")
+                .attr("d", valueline);
+
+            // Add the X Axis
+            svg.append("g")
+                .attr("transform", "translate(0," + height + ")")
+                .call(d3.axisBottom(x));
+
+            // Add the Y Axis
+            svg.append("g")
+                .call(d3.axisLeft(y));
+        });
+    </script>
+</body>
+
+</html>
