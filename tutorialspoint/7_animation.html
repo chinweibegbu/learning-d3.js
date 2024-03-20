@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- D3.js was added to this project via CDN -->
+    <script type="text/javascript" src="https://d3js.org/d3.v4.min.js"></script>
+    <title>D3.js Animation</title>
+</head>
+
+<body>
+    <h3>Simple Animations</h3>
+    <p id="animation-duration">This is an animation of duration 2 seconds</p>
+    <p id="animation-delay">This is an animation of duration 2 seconds and delay 2 seconds</p>
+
+    <script>
+        // Simple animations
+        d3.selectAll("#animation-duration").transition().style("color", "green").duration(2000);
+        d3.selectAll("#animation-delay").transition().style("font-size", "20px").delay(2000).duration(2000);
+
+        // Animation life cycle
+        // QUESTION: Why doesn't this work?
+        d3.select("body")
+            .transition()
+            .delay(4000)
+            .duration(2000)
+            .each("start", function () {
+                d3.select(this).style("color", "green");
+            })
+            .style("color", "red");
+    </script>
+</body>
+
+</html>
