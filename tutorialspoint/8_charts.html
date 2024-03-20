@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- D3.js was added to this project via CDN -->
+    <script src="https://d3js.org/d3.v4.min.js"></script>
+    <title>D3.js Charts</title>
+
+    <style>
+        /* SVG Styling */
+        svg {
+            border: 1px black solid;
+            padding: 10px;
+        }
+
+        /* Bar Chart Styling */
+        svg rect {
+            fill: gray;
+        }
+
+        svg text {
+            fill: white;
+            font: 12px sans-serif;
+            text-anchor: end;
+        }
+
+        /* Pie Chart Styling */
+        .arc text {
+            font: 12px arial;
+            text-anchor: middle;
+        }
+
+        .arc path {
+            stroke: #fff;
+        }
+
+        .title {
+            fill: black;
+            font-weight: italic;
+        }
+    </style>
+</head>
+
+<body>
+    <h3>Charts</h3>
+
+    <div id="bar-chart-svg"></div>
+    <p>Fig. 1: Bar Chart with D3.js</p>
+
+    <div id="circle-chart-svg"></div>
+    <p>Fig. 2: Circle Chart with D3.js</p>
+
+    <div id="pie-chart-svg"></div>
+    <p>Fig. 3: Pie Chart with D3.js</p>
+
+    <script>
+        /*** BAR CHART ***/
+        // Define variables for the bar chart
+        var width = 300,
+            scaleFactor = 20,
+            barHeight = 30,
+            data = [10, 5, 12, 15];
+
+        // Add an SVG to alloted <div>
+        var graph = d3.select("#bar-chart-svg")
+            .append("svg")
+            .attr("width", width)
+            .attr("height", barHeight * data.length);           // attr("height", (30 * 4) = attr("height", 120)
+
+        // Create a bar for each element in the data set using <g>
+        var bar = graph.selectAll("g")
+            .data(data)
+            .enter()
+            .append("g")
+            .attr("transform", function (d, i) {                // Tells the bar where to start
+                return "translate(0," + i * barHeight + ")";    // e.g. translate(0, (0 * 30)) = translate(0, 0) 
+            });
+
+        // Add an SVG rectangle to each bar
+        bar.append("rect")
+            .attr("width", function (d) {
+                return d * scaleFactor;                         // e.g. attr("width", (10 * 20) = attr("width", 200)
+            })
+            // WHY is 1 subtracted from the barHeight?
+            // BECAUSE, otherwise, it would be a histogram, as all the bars would touch
+            .attr("height", barHeight - 1);                     // attr("height", (30 - 1) = attr("height", 29)
+
+        // Add SVG text to each bar
+        bar.append("text")
+            .attr("x", function (d) {
+                return (d * scaleFactor);                       // e.g. attr("x", (10 * 20) = attr ("x", 200)
+            })
+            .attr("y", barHeight / 2)                           // attr("y", (30 / 2) = attr ("y", 15)
+            .attr("dx", "-.35em")                               // Moves the text -vely on the x-axis
+            .attr("dy", ".35em")                                // Moves the text +vely on the y-axis
+            .text(function (d) {
+                return d;                                       // e.g. text("10")
+            });
+
+
+        /*** CIRCLE CHART ***/
+        // Define variables for the circle chart
+        var width = 400,
+            height = 200,
+            data = [10, 20, 30],
+            colors = ['lightgrey', 'grey', 'black'];
+
+        // Add an SVG to alloted <div>
+        var svg = d3
+            .select("#circle-chart-svg")
+            .append("svg")
+            .attr("width", width)
+            .attr("height", height);
+
+        // Create a chart element for each element in the data set using <g>
+        var g = svg.selectAll("g")
+            .data(data)
+            .enter()
+            .append("g")
+            .attr("transform", function (d, i) {                // Tells the circle where to start
+                return "translate(0,0)";
+            });
+
+        // Add an SVG circle to each chart element
+        g.append("circle")
+            .attr("cx", function (d, i) {
+                return (i * 75) + 50;
+            })
+            .attr("cy", function (d, i) {
+                return 100;
+            })
+            .attr("r", function (d) {
+                return d * 1.5;
+            })
+            .attr("fill", function (d, i) {
+                return colors[i];
+            });
+
+        g.append("text")
+            .attr("x", function (d, i) {
+                return (i * 75) + 55;
+            })
+            .attr("y", 105)
+            .attr("stroke", "white")
+            .style("font-size", "10px")
+            .style("font-family", "sans-serif").text(function (d) {
+                return d;
+            });
+
+
+        /*** PIE CHART ***/
+        // Define the variables for the pie chart
+        var width = 400,
+            height = 400,
+            radius = Math.min(width, height) / 2;
+
+        // Add an SVG to alloted <div>
+        var svg = d3.select("#pie-chart-svg")
+            .append("svg")
+            .attr("width", width)
+            .attr("height", height);
+
+        // Create a chart element to hold all the arcs for the pie chart using <g>
+        var g = svg.append("g")
+            .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
+
+        // Add colours to the chart
+        var color = d3.scaleOrdinal(['#0066CC', '#00AACC', '#33CCCC', '#66CCCC', '#99CCCC', '#CCCCCC', '#666666']);
+
+        // Generate a pie chart with each sector mapping to that of a specified data set
+        var pie = d3.pie()
+            .value(function (d) {
+                return d.percent;
+            });
+
+        // Create a template path to be applied to each sector
+        var path = d3.arc()
+            .outerRadius(radius - 30)
+            .innerRadius(0);
+
+        // Create a template label to be applied to each sector
+        var label = d3.arc()
+            .outerRadius(radius)
+            .innerRadius(radius - 150);
+
+        // Load data from CSV file
+        d3.csv("populations.csv", function (error, data) {
+            // Throw an error if the CSV file does not load properly
+            if (error) throw error;
+
+            // Add an arc for each element in the data set using <g>
+            var arc = g.selectAll(".arc")
+                .data(pie(data))
+                .enter()
+                .append("g")
+                .attr("class", "arc");
+
+            // Add a path element with the specified path template to each arc 
+            arc.append("path")
+                .attr("d", path)
+                .attr("fill", function (d) {
+                    return color(d.data.states);
+                });
+
+            // Add a text element with the specified label template to each arc 
+            arc.append("text")
+                .attr("transform", function (d) {
+                    return "translate(" + label.centroid(d) + ")";
+                })
+                .text(function (d) { 
+                    return d.data.states; 
+                });
+        });
+
+        // Add a title to the chart
+        svg.append("g")
+            .attr("transform", "translate(" + ((width/2) + (width/5)) + "," + 20 + ")")
+            .append("text").text("Top population states in india")
+            .attr("class", "title")
+    </script>
+</body>
+
+</html>
