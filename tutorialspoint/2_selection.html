@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- D3.js was added to this project via CDN -->
+    <script type = "text/javascript" src="https://d3js.org/d3.v4.min.js"></script>
+    <style>
+        .another-class {
+            font-weight: bold;
+            color: brown;
+        }
+    </style>
+    <title>D3.js Selection</title>
+</head>
+
+<body>
+    <div class="selection">
+        <h3>Basics</h3>
+        <div>
+            Selection by HTML tag
+        </div>
+        <div id="selection-id">
+            Selection by ID
+        </div>
+        <div class="selection-class">
+            Selection by class #1 
+        </div>
+        <div class="selection-class">
+            Selection by class #2 
+        </div>
+
+        <h3>Class Manipulation</h3>
+        <div class="selection-classed">
+            <p>Cheers to 
+                <span>understanding</span>
+                <code>classed()</code>
+                function <span>usage</span> with D3.js
+            </p>
+        </div>
+    </div>
+
+    <script>
+        // D3.js Selection
+        d3.selectAll("div").text();
+        d3.select("#selection-id").text();
+        d3.select(".selection-class").text();
+
+        // Adding DOM Elements
+        d3.select("div.selection").append("div").text("DIV added with .append() and .text() functions");
+
+        // Modifying DOM elements
+        d3.select("div div").html("Modified with <code>html()</code> function");
+        d3.select("#selection-id").attr("style", "text-decoration: underline");
+        d3.selectAll(".selection-class").style("color", "green");
+
+        // Modifying DOM element classes
+        // 1. Add class
+        d3.selectAll("div p span").classed("another-class", true);
+        // 2. Remove class
+        d3.selectAll("div p span").classed("another-class", false);
+        // 3. Check class
+        console.log(`Do the <span>s have the 'another-class' class? ${d3.select("div p span").classed("another-class")}`);
+        // 4. Toggle class
+        d3.selectAll("div p span").classed("anotherclass", !oneBar.classed("myanotherclass"));
+
+    </script>
+</body>
+
+</html>
