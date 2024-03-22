@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- D3.js was added to this project via CDN -->
+    <script type="text/javascript" src="https://d3js.org/d3.v4.min.js"></script>
+    <!-- TopoJSON is an extension of GeoJSON that encodes topology -->
+    <script src="http://d3js.org/topojson.v0.min.js"></script>
+
+    <style>
+        path {
+            stroke: white;
+            stroke-width: 0.5px;
+            fill: grey;
+        }
+
+        .stateTN {
+            fill: red;
+        }
+
+        .stateAP {
+            fill: blue;
+        }
+
+        .stateMP {
+            fill: green;
+        }
+    </style>
+    <title>D3.js Selection</title>
+</head>
+
+<body>
+    <script>
+        // Define variables
+        var width = 600;
+        var height = 400;
+        var projection = d3.geoMercator()
+            .center([78, 22])                       // 78 desgrees West and 22 degrees North
+            .scale(680)                             // scale() default value is 150 (for this particular projection)
+            .translate([width / 2, height / 2]);
+
+        // Add the SVG to <body>
+        var svg = d3.select("body").append("svg")
+            .attr("width", width)
+            .attr("height", height);
+
+        // Create a path
+        var path = d3.geoPath()
+            .projection(projection);
+
+        // Read data from indiatopo.json
+        d3.json("./indiatopo.json", function (error, topology) {
+            svg.selectAll("path")
+                .data(topojson.object(topology, topology.objects.states).geometries)
+                .enter()
+                .append("path")
+                .attr("class", function (d) { return "state" + d.id; })
+                .attr("d", path)
+        });
+    </script>
+</body>
+
+</html>
